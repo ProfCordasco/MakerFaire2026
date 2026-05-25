@@ -20,3 +20,15 @@
   background-color: #F0867D;
   color: white;
 }
+
+.badge-libera {
+    color: green;
+}
+
+.badge-occupata {
+    color: red;
+}
+
+.cuccia-badge {
+    font-size: larger;
+}

@@ -2,9 +2,9 @@ document.addEventListener("DOMContentLoaded", function (){
     caricaCucce();
 });
 
-function caricacucce () {
-    getJSON("../dati/cucce,json")
-    .then(Function(cucce){
+function caricaCucce () {
+    getJSON("../dati/cucce.json")
+    .then(function(cucce) {
       mostraCucce(cucce);
     })
     .catch(function (errore){
@@ -21,38 +21,43 @@ function mostraCucce(cucce){
     cucce.forEach(function (cuccia) {
         let classeBadge = "badge-libera";
 
-       if(cuccia.stato === "occupata") {
-        classeBadge = "badge occupata";
+       if(cuccia.stato_animale === 1) {
+        classeBadge = "badge-occupata";
        }
 
+
+       const statoAnimale = cuccia.stato_animale == 0 ? "Cuccia libera" : "Cuccia occupata";
+       const statoPorta = cuccia.stato_porta == 0 ? "Porta aperta" : "Porta chiusa";
+
+
        lista.innerHTML += `
-<div class="col-md-6 col-xl-4">
-<div class="card card-custom h-100">
-<div class="card-body">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card card-custom h-100">
+                   <div class="card-body">
 
-<div class="d-flex justify-content-between">
-<div>
-<h5 class="card-title">${cuccia.nome}</h5>
-<p class="text-muted mb-2">${cuccia.posizione}</p>
-</div>
+                     <div class="d-flex justify-content-between">
+                     <div>
+                        <h5 class="card-title">${cuccia.nome}</h5>
+                        <p class="text-muted mb-2">${cuccia.zona}</p>
+                     </div>
 
-<span class="badge ${classeBadge}">
-${cuccia.stato.toUpperCase()}
-</span>
-</div>
+                     <span class="badge- ${classeBadge}">
+                         ${statoAnimale}
+                    </span>
+                    </div>
 
-<p class="mb-1">🌡️ ${cuccia.temperatura} °C</p>
-<p class="mb-1">💧 ${cuccia.umidita}%</p>
-<p class="mb-3">🚪 Porta: ${cuccia.porta}</p>
+                    <p class="mb-1">🌡️ ${cuccia.temperatura} °C</p>
+                    <p class="mb-1">💧 ${cuccia.umidita}%</p>
+                    <p class="mb-3">🚪 Porta: ${statoPorta}</p>
 
-<a href="cuccia.html?id=${cuccia.id}" class="btn btn-outline-primary btn-sm w-100">
-Dettagli
-</a>
+                <a href="cuccia.html?id=${cuccia.id}" class="btn btn-outline-primary btn-sm w-100">
+                Dettagli
+                </a>
 
-</div>
-</div>
-</div>
-`;
+            </div>
+            </div>
+            </div>
+            `;
 
     });
 }
