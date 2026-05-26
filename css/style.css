@@ -3,7 +3,7 @@
     background-color:#caced1;
 }
 
-.sidebar .nav-link {
+.sidedbar .nav-link {
     margin-bottom: 8px;
     border-radius: 8px; 
     transition: 0.2s;
@@ -13,22 +13,4 @@
 .nav-link.active {
     background-color: #F0867D;
     color: white;
-}
-
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
-  background-color: #F0867D;
-  color: white;
-}
-
-.badge-libera {
-    color: green;
-}
-
-.badge-occupata {
-    color: red;
-}
-
-.cuccia-badge {
-    font-size: larger;
 }
