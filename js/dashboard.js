@@ -3,9 +3,32 @@ document.addEventListener("DOMContentLoaded", function (){
 });
 
 function caricaCucce () {
-    getJSON("../dati/cucce.json")
-    .then(function(cucce) {
+    const URL = "https://scuolaapi.altervista.org/BCK/get_cucce.php";
+    //const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
+
+    //da recuperare localStorage
+    const sessionId = "b0cce685c79fcd2c58ee354fa9d2cd8c2c6ecdebb3ea5a366fe9f84f18f8398f";
+
+
+
+    fetch(URL, {
+        method: "GET",
+        headers: {
+            "X-Session-Id": sessionId
+        }
+    })
+    .then(function(risposta) {
+        return risposta.json();
+        console.log(cucce);
       mostraCucce(cucce);
+    })
+    .then(function(risposta){
+        if(risposta.success == true) {
+            mostraCucce(risposta.data);
+        }
+        else {
+            alert(risposta.message);
+        }
     })
     .catch(function (errore){
         console.log("errore", errore);
@@ -21,13 +44,17 @@ function mostraCucce(cucce){
     cucce.forEach(function (cuccia) {
         let classeBadge = "badge-libera";
 
-       if(cuccia.stato_animale === 1) {
+       if(cuccia.stato_animale == 1) {
         classeBadge = "badge-occupata";
        }
+
+       const umidità = cuccia.umidità ?? "-" ;
+       const temperatura = cuccia.temperatura ?? "-";
 
 
        const statoAnimale = cuccia.stato_animale == 0 ? "Cuccia libera" : "Cuccia occupata";
        const statoPorta = cuccia.stato_porta == 0 ? "Porta aperta" : "Porta chiusa";
+       const iconaPorta = cuccia.stato_porta == 0 ? "open" : "closed";
 
 
        lista.innerHTML += `
@@ -46,9 +73,9 @@ function mostraCucce(cucce){
                     </span>
                     </div>
 
-                    <p class="mb-1">🌡️ ${cuccia.temperatura} °C</p>
-                    <p class="mb-1">💧 ${cuccia.umidita}%</p>
-                    <p class="mb-3">🚪 Porta: ${statoPorta}</p>
+                    <p class="mb-1"><i class="fa-solid fa-temperature-empty"></i> ${temperatura} °C</p>
+                    <p class="mb-1"><i class="fa-solid fa-droplet"></i> ${umidità} %</p>
+                    <p class="mb-3"><i class="fa-solid fa-door-${iconaPorta}"></i> Porta: ${statoPorta}</p>
 
                 <a href="cuccia.html?id=${cuccia.id}" class="btn btn-outline-primary btn-sm w-100">
                 Dettagli

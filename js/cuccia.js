@@ -6,24 +6,43 @@ document.addEventListener("DOMContentLoaded", function (){
 });
 
 function caricaCuccia(id){
-     getJSON("../dati/cucce.json")
-     .then(function(cucce){
-        
-        const cuccia = cucce.find(function(elemento){
-            return elemento.id == id;
-        });
 
-        if(cuccia){
-            mostraCuccia(cuccia);
-         }
-         else {
+     const URL = "https://scuolaapi.altervista.org/BCK/get_cuccia.php?id="+id;
+
+    //const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
+
+    // Per ora inseriamo qui il session manualmente
+    // Dopo la login useremo:
+    // const sessionId: localStorage.getItem("session_id");
+
+    const sessionId = "b0cce685c79fcd2c58ee354fa9d2cd8c2c6ecdebb3ea5a366fe9f84f18f8398f";
+
+
+
+    fetch(URL, {
+        method: "GET",
+        headers: {
+            "X-Session-Id": sessionId
+        }
+    })
+    .then(function(risposta) {
+        return risposta.json();
+        console.log(cucce);
+      mostraCucce(cucce);
+    })
+    .then(function(risposta){
+        if(risposta.success == true) {
+            mostraCuccia(risposta.data);
+        }
+        else {
             document.getElementById("dettaglio-cuccia").innerHTML = `
                 <div class="alert alert-danger">
                     Cuccia non trovata
                 </div>
             `;
-         }
-     });
+        }
+    });
+
  
 }
 
@@ -45,10 +64,13 @@ function mostraCuccia(cuccia){
     }
     
     let statoPorta = "APERTA";
-
     if(cuccia.stato_porta == 1){
         statoPorta = "CHIUSA";
     }
+
+    const umidità = cuccia.umidità ?? "-" ;
+    const temperatura = cuccia.temperatura ?? "-";
+    const iconaPorta = cuccia.stato_porta == 0 ? "open" : "closed";
 
     contenitore.innerHTML = `
 
@@ -88,10 +110,10 @@ ${badgeAnimale}
 
 <div class="border rounded p-3">
 
-<h6>🌡️ Temperatura</h6>
+<h6><i class="fa-solid fa-temperature-empty"></i> Temperatura</h6>
 
 <h3>
-${cuccia.temperatura} °C
+${temperatura} °C
 </h3>
 
 </div>
@@ -102,10 +124,10 @@ ${cuccia.temperatura} °C
 
 <div class="border rounded p-3">
 
-<h6>💧 Umidità</h6>
+<h6><i class="fa-solid fa-droplet"></i> Umidità</h6>
 
 <h3>
-${cuccia.umidita}%
+${umidità} %
 </h3>
 
 </div>
@@ -116,7 +138,7 @@ ${cuccia.umidita}%
 
 <div class="border rounded p-3">
 
-<h6>🚪 Stato porta</h6>
+<h6><i class="fa-solid fa-door-${iconaPorta}"></i> Stato porta</h6>
 
 <h3>
 ${statoPorta}
@@ -128,9 +150,9 @@ ${statoPorta}
 
 <div class="col-md-6">
 
-<div class="border rounded p-3">
+<div class="border rounded p-3 h-100">
 
-<h6>🕒 Ultimo aggiornamento</h6>
+<h6><i class="fa-regular fa-clock"></i> Ultimo aggiornamento</h6>
 
 <p class="mb-0">
 ${cuccia.ultimo_aggiornamento}
@@ -167,6 +189,59 @@ Chiudi porta
 </div>
 
 `;
+
+
+}
+
+
+function apriPorta(id){
+    chiamaComandoPorta(id, 0);
+}
+
+function chiudiPorta(id){
+    chiamaComandoPorta(id, 1);
+}
+
+function chiamaComandoPorta(id, statoPorta){
+    const URL = "https://scuolaapi.altervista.org/BCK/comando_porta.php";
+    //const URL = "https://scuolaapi.altervista.org/api/comando_porta.php";  
+    
+    // Per ora inseriamo qui il session manualmente
+    // Dopo la login useremo:
+    // const sessionId: localStorage.getItem("session_id");
+
+    const sessionId = "b0cce685c79fcd2c58ee354fa9d2cd8c2c6ecdebb3ea5a366fe9f84f18f8398f";
+
+    fetch(URL, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            "X-Session-Id": sessionId
+        },
+        body: JSON.stringify({
+            id_cuccia: id,
+            stato_porta: statoPorta
+        })
+    })
+    .then(function(response){
+        return response.json();
+    })
+    .then(function(risposta){
+        console.log(risposta);
+
+        if(risposta.success === true){
+            alert("Comando eseguito correttamente");
+
+            caricaCuccia(id);
+        }
+        else {
+            alert(risposta.message);
+        }
+    })
+    .catch(function(errore){
+        console.log("Errore: "+errore);
+        alert("Errore durante l'invio del comando");
+    });
 
 
 }
