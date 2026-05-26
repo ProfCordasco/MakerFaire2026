@@ -1,7 +1,7 @@
 [
     {
       "id": 1,
-      "nome": "PawPaw Parco",
+      "nome": "SafePaw Parco",
       "zona": "Parco 2 Giugno",
       "latitudine": 41.1114230,
       "longitudine": 16.8755400,
@@ -14,7 +14,7 @@
     },
     {
       "id": 2,
-      "nome": "PawPaw Stazione",
+      "nome": "SafePaw Stazione",
       "zona": "Stazione Centrale",
       "latitudine": 41.1174300,
       "longitudine": 16.8702100,
@@ -27,7 +27,7 @@
     },
     {
       "id": 3,
-      "nome": "PawPaw Lungomare",
+      "nome": "SafePaw Lungomare",
       "zona": "Lungomare",
       "latitudine": 41.1258900,
       "longitudine": 16.8743900,
@@ -39,3 +39,4 @@
       "attiva": 1
     }
   ]
+  
