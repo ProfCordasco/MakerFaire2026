@@ -6,7 +6,10 @@ function caricaCucce () {
     const URL = "https://scuolaapi.altervista.org/BCK/get_cucce.php";
     //const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
 
-    //da recuperare localStorage
+    // Per ora inseriamo qui il session manualmente
+    // Dopo la login useremo:
+    // const sessionId: localStorage.getItem("session_id");
+
     const sessionId = "b0cce685c79fcd2c58ee354fa9d2cd8c2c6ecdebb3ea5a366fe9f84f18f8398f";
 
 
