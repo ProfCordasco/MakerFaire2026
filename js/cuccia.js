@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", function (){
 });
 
 function caricaCuccia(id){
-
-    const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
+    const URL = "https://scuolaapi.altervista.org/api/get_cuccia.php?id="+id;
+    //const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
 
     const sessionId = localStorage.getItem("session_id");
 

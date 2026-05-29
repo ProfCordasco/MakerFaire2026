@@ -1,7 +1,7 @@
 const API_URL = "";
 
 const utenteLoggato = localStorage.getItem("utenteLoggato");
-const session_Id = localStorage.getItem("session_Id");
+const session_Id = localStorage.getItem("session_id");
 const nome_utente = localStorage.getItem("nome_utente");
 
 if(!utenteLoggato || !session_Id){
@@ -25,10 +25,11 @@ function getJSON(file) {
 
 
 function logout() {
-
+  
     const sessionId = localStorage.getItem("session_id");
   
     const URL = "https://scuolaapi.altervista.org/api/logout.php";
+    //const URL = "https://scuolaapi.altervista.org/api/logout.php";
   
   
     fetch(URL, {
