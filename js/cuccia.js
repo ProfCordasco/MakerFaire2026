@@ -13,6 +13,8 @@ function caricaCuccia(id){
 
     const sessionId = localStorage.getItem("session_id");
 
+    document.getElementById("linkModifica").href = "modifica_cuccia.html?id="+id;
+
     fetch(URL, {
         method: "GET",
         headers: {
