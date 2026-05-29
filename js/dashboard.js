@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function (){
 });
 
 function caricaCucce () {
-    const URL = "https://scuolaapi.altervista.org/BCK/get_cucce.php";
+    const URL = "https://scuolaapi.altervista.org/BCK/login.php";
     //const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
 
     const sessionId = localStorage.getItem("session_id");

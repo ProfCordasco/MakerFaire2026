@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function (){
 });
 
 function caricaCuccePerAllarmi(){
-    const URL = "https://scuolaapi.altervista.org/BCK/get_cucce.php";
+    const URL = "https://scuolaapi.altervista.org/BCK/login.php";
     //const URL = "https://scuolaapi.altervista.org/api/get_eventi.php";
 
     const sessionId = localStorage.getItem("session_id");

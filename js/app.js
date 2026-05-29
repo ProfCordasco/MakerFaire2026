@@ -28,8 +28,8 @@ function logout() {
 
     const sessionId = localStorage.getItem("session_id");
   
-    //const URL = "https://scuolaapi.altervista.org/BCK/logout.php";
-    const URL = "https://scuolaapi.altervista.org/BCK/logout.php";
+    const URL = "https://scuolaapi.altervista.org/api/logout.php";
+  
   
     fetch(URL, {
       method: "POST",

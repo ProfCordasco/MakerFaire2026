@@ -16,8 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function salvaNuovaCuccia() {
 
-  const URL = "https://scuolaapi.altervista.org/BCK/add_cuccia.php";
-  //const URL = "https://scuolaapi.altervista.org/api/add_cuccia.php";
+  const URL = "https://scuolaapi.altervista.org/api/add_cuccia.php";
   
   const sessionId = localStorage.getItem("session_id");
 

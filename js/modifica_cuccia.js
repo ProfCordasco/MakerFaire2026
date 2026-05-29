@@ -27,8 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function caricaDatiCuccia(id) {
 
-  const URL = "https://scuolaapi.altervista.org/BCK/get_cucce.php";
-  //const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
+  const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
   const sessionId = localStorage.getItem("session_id");
 
   fetch(URL, {

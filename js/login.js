@@ -12,8 +12,7 @@ function effettuaLogin(){
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    const URL = "https://scuolaapi.altervista.org/BCK/login.php";
-    //const URL = "https://scuolaapi.altervista.org/api/login.php";
+    const URL = "https://scuolaapi.altervista.org/api/login.php";
 
 
     fetch(URL, {
