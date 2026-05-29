@@ -1,17 +1,29 @@
-document.addEventListener("DOMContentLoaded", function (){
+let mappa = null;
+let marker = null;
+let timerAggiornamento = null;
+
+document.addEventListener("DOMContentLoaded", function () {
+
     const parametri = new URLSearchParams(window.location.search);
     const idCuccia = parametri.get("id");
 
-    caricaCuccia(idCuccia);
+    document.getElementById("linkModifica").href =
+        "modifica_cuccia.html?id=" + idCuccia;
+
+    caricaCuccia(idCuccia, true);
+
+    timerAggiornamento = setInterval(function () {
+        caricaCuccia(idCuccia, false);
+    }, 5000);
+
 });
 
-function caricaCuccia(id){
-    const URL = "https://scuolaapi.altervista.org/api/get_cuccia.php?id="+id;
-    //const URL = "https://scuolaapi.altervista.org/api/get_cucce.php";
+function caricaCuccia(id, primaVolta) {
+
+    const URL =
+        "https://scuolaapi.altervista.org/api/get_cuccia.php?id=" + id;
 
     const sessionId = localStorage.getItem("session_id");
-
-    document.getElementById("linkModifica").href = "modifica_cuccia.html?id="+id;
 
     fetch(URL, {
         method: "GET",
@@ -19,229 +31,334 @@ function caricaCuccia(id){
             "X-Session-Id": sessionId
         }
     })
-    .then(function(risposta) {
-        return risposta.json();
-        console.log(cucce);
-      mostraCucce(cucce);
-    })
-    .then(function(risposta){
-        if(risposta.success == true) {
-            mostraCuccia(risposta.data);
-        }
-        else {
-            document.getElementById("dettaglio-cuccia").innerHTML = `
-                <div class="alert alert-danger">
-                    Cuccia non trovata
-                </div>
-            `;
-        }
-    });
+        .then(function (risposta) {
+            return risposta.json();
+        })
+        .then(function (risposta) {
 
- 
+            console.log(risposta);
+
+            if (risposta.success == true) {
+
+                if (primaVolta == true) {
+                    mostraCuccia(risposta.data);
+                } else {
+                    aggiornaDatiCuccia(risposta.data);
+                }
+
+            } else {
+
+                document.getElementById("dettaglio-cuccia").innerHTML = `
+                    <div class="alert alert-danger">
+                        Cuccia non trovata
+                    </div>
+                `;
+
+            }
+
+        })
+        .catch(function (errore) {
+            console.log("Errore:", errore);
+        });
+
 }
 
+function mostraCuccia(cuccia) {
 
-function mostraCuccia(cuccia){
     const contenitore = document.getElementById("dettaglio-cuccia");
-    let badgeAnimale = `
-    <span class="cuccia-badge badge badge-libera">
-        LIBERA
-    </span>
-   `;
 
-   if (cuccia.stato_animale == 1) {
-    badgeAnimale = `
-    <span class="cuccia-badge badge badge-occupata">
-        OCCUPATA
-    </span>
-    `;
+    let testoAnimale = "LIBERA";
+    let classeBadge = "badge-libera";
+
+    if (cuccia.stato_animale == 1) {
+        testoAnimale = "OCCUPATA";
+        classeBadge = "badge-occupata";
     }
-    
+
     let statoPorta = "APERTA";
-    if(cuccia.stato_porta == 1){
+
+    if (cuccia.stato_porta == 1) {
         statoPorta = "CHIUSA";
     }
 
-    const umidità = cuccia.umidità ?? "-" ;
+    const umidita = cuccia.umidita ?? "-";
     const temperatura = cuccia.temperatura ?? "-";
+    const ultimoAggiornamento = cuccia.ultimo_aggiornamento ?? "-";
     const iconaPorta = cuccia.stato_porta == 0 ? "open" : "closed";
 
     contenitore.innerHTML = `
 
-<div class="mb-3">
+        <div class="mb-3">
 
-<a href="dashboard.html" class="btn btn-outline-secondary">
-← Torna alla dashboard
-</a>
+            <a href="dashboard.html" class="btn btn-outline-secondary">
+                ← Torna alla dashboard
+            </a>
 
-</div>
+        </div>
 
-<div class="card card-custom">
+        <div class="card card-custom">
 
-<div class="card-body">
+            <div class="card-body">
 
-<div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="d-flex justify-content-between align-items-start mb-4">
 
-<div>
+                    <div>
 
-<h2 class="card-title">
-${cuccia.nome}
-</h2>
+                        <h2 class="card-title">
+                            ${cuccia.nome}
+                        </h2>
 
-<p class="text-muted">
-${cuccia.zona}
-</p>
+                        <p class="text-muted">
+                            ${cuccia.zona}
+                        </p>
 
-</div>
+                    </div>
 
-${badgeAnimale}
+                    <span
+                        id="badgeAnimale"
+                        class="cuccia-badge badge ${classeBadge}">
 
-</div>
+                        ${testoAnimale}
 
-<div class="row g-3">
+                    </span>
 
-<div class="col-md-6">
+                </div>
 
-<div class="border rounded p-3">
+                <div class="row g-3 align-items-stretch">
 
-<h6><i class="fa-solid fa-temperature-empty"></i> Temperatura</h6>
+                    <div class="col-md-6">
 
-<h3>
-${temperatura} °C
-</h3>
+                        <div class="border rounded p-3 h-100">
 
-</div>
+                            <h6>
+                                <i class="fa-solid fa-temperature-empty"></i>
+                                Temperatura
+                            </h6>
 
-</div>
+                            <h3 id="temperatura">
+                                ${temperatura} °C
+                            </h3>
 
-<div class="col-md-6">
+                        </div>
 
-<div class="border rounded p-3">
+                    </div>
 
-<h6><i class="fa-solid fa-droplet"></i> Umidità</h6>
+                    <div class="col-md-6">
 
-<h3>
-${umidità} %
-</h3>
+                        <div class="border rounded p-3 h-100">
 
-</div>
+                            <h6>
+                                <i class="fa-solid fa-droplet"></i>
+                                Umidità
+                            </h6>
 
-</div>
+                            <h3 id="umidita">
+                                ${umidita} %
+                            </h3>
 
-<div class="col-md-6">
+                        </div>
 
-<div class="border rounded p-3">
+                    </div>
 
-<h6><i class="fa-solid fa-door-${iconaPorta}"></i> Stato porta</h6>
+                    <div class="col-md-6">
 
-<h3>
-${statoPorta}
-</h3>
+                        <div class="border rounded p-3 h-100">
 
-</div>
+                            <h6>
+                                <i id="iconaPorta" class="fa-solid fa-door-${iconaPorta}"></i>
+                                Stato porta
+                            </h6>
 
-</div>
+                            <h3 id="statoPorta">
+                                ${statoPorta}
+                            </h3>
 
-<div class="col-md-6">
+                        </div>
 
-<div class="border rounded p-3 h-100">
+                    </div>
 
-<h6><i class="fa-regular fa-clock"></i> Ultimo aggiornamento</h6>
+                    <div class="col-md-6">
 
-<p class="mb-0">
-${cuccia.ultimo_aggiornamento}
-</p>
+                        <div class="border rounded p-3 h-100">
 
-</div>
+                            <h6>
+                                <i class="fa-regular fa-clock"></i>
+                                Ultimo aggiornamento
+                            </h6>
 
-</div>
+                            <p id="ultimoAggiornamento" class="mb-0">
+                                ${ultimoAggiornamento}
+                            </p>
 
-</div>
+                        </div>
 
-<div class="mt-4">
-  <h5>Posizione cuccia</h5>
-  <div id="mappa-cuccia"></div>
-</div>
+                    </div>
 
+                </div>
 
-<!-- BOTTONI -->
-<div class="mt-4 d-flex gap-2">
+                <div class="mt-4">
 
-<button
-class="btn btn-success"
-onclick="apriPorta(${cuccia.id})">
+                    <h5>Posizione cuccia</h5>
 
-Apri porta
+                    <div id="mappa-cuccia"></div>
 
-</button>
+                </div>
 
-<button
-class="btn btn-danger"
-onclick="chiudiPorta(${cuccia.id})">
+                <div class="mt-4 d-flex gap-2">
 
-Chiudi porta
+                    <button
+                        class="btn btn-success"
+                        onclick="apriPorta(${cuccia.id})">
 
-</button>
+                        Apri porta
 
-</div>
+                    </button>
 
-</div>
+                    <button
+                        class="btn btn-danger"
+                        onclick="chiudiPorta(${cuccia.id})">
 
-</div>
+                        Chiudi porta
 
-`;
+                    </button>
 
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
 
     creaMappaCuccia(cuccia);
+
+}
+
+function aggiornaDatiCuccia(cuccia) {
+
+    const temperatura = cuccia.temperatura ?? "-";
+    const umidita = cuccia.umidita ?? "-";
+    const ultimoAggiornamento = cuccia.ultimo_aggiornamento ?? "-";
+
+    document.getElementById("temperatura").innerHTML =
+        temperatura + " °C";
+
+    document.getElementById("umidita").innerHTML =
+        umidita + " %";
+
+    document.getElementById("ultimoAggiornamento").innerHTML =
+        ultimoAggiornamento;
+
+    let statoPorta = "APERTA";
+
+    if (cuccia.stato_porta == 1) {
+        statoPorta = "CHIUSA";
+    }
+
+    document.getElementById("statoPorta").innerHTML =
+        statoPorta;
+
+    const iconaPorta = document.getElementById("iconaPorta");
+
+    if (iconaPorta) {
+
+        iconaPorta.classList.remove("fa-door-open");
+        iconaPorta.classList.remove("fa-door-closed");
+
+        if (cuccia.stato_porta == 1) {
+            iconaPorta.classList.add("fa-door-closed");
+        } else {
+            iconaPorta.classList.add("fa-door-open");
+        }
+
+    }
+
+    const badge = document.getElementById("badgeAnimale");
+
+    if (cuccia.stato_animale == 1) {
+
+        badge.innerHTML = "OCCUPATA";
+
+        badge.classList.remove("badge-libera");
+        badge.classList.add("badge-occupata");
+
+    } else {
+
+        badge.innerHTML = "LIBERA";
+
+        badge.classList.remove("badge-occupata");
+        badge.classList.add("badge-libera");
+
+    }
+
+    aggiornaMappaCuccia(cuccia);
+
 }
 
 function creaMappaCuccia(cuccia) {
 
     if (!cuccia.latitudine || !cuccia.longitudine) {
-      return;
+        return;
     }
-  
+
     const latitudine = parseFloat(cuccia.latitudine);
     const longitudine = parseFloat(cuccia.longitudine);
-  
-    const mappa = L.map("mappa-cuccia").setView(
-      [latitudine, longitudine],
-      15
+
+    mappa = L.map("mappa-cuccia").setView(
+        [latitudine, longitudine],
+        15
     );
-  
+
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: "© OpenStreetMap"
+        maxZoom: 19,
+        attribution: "© OpenStreetMap"
     }).addTo(mappa);
-  
-    L.marker([latitudine, longitudine])
-      .addTo(mappa)
-      .bindPopup(cuccia.nome)
-      .openPopup();
-  
-  }
-  
 
+    marker = L.marker([latitudine, longitudine])
+        .addTo(mappa)
+        .bindPopup(cuccia.nome)
+        .openPopup();
 
-function apriPorta(id){
+    setTimeout(function () {
+        mappa.invalidateSize();
+    }, 300);
+
+}
+
+function aggiornaMappaCuccia(cuccia) {
+
+    if (!mappa || !marker) {
+        return;
+    }
+
+    if (!cuccia.latitudine || !cuccia.longitudine) {
+        return;
+    }
+
+    const latitudine = parseFloat(cuccia.latitudine);
+    const longitudine = parseFloat(cuccia.longitudine);
+
+    marker.setLatLng([latitudine, longitudine]);
+
+}
+
+function apriPorta(id) {
     chiamaComandoPorta(id, 0);
 }
 
-function chiudiPorta(id){
+function chiudiPorta(id) {
     chiamaComandoPorta(id, 1);
 }
 
-function chiamaComandoPorta(id, statoPorta){
+function chiamaComandoPorta(id, statoPorta) {
+
     const URL = "https://scuolaapi.altervista.org/BCK/comando_porta.php";
-    //const URL = "https://scuolaapi.altervista.org/api/comando_porta.php";  
-
     const sessionId = localStorage.getItem("session_id");
-
 
     fetch(URL, {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             "X-Session-Id": sessionId
         },
         body: JSON.stringify({
@@ -249,25 +366,31 @@ function chiamaComandoPorta(id, statoPorta){
             stato_porta: statoPorta
         })
     })
-    .then(function(response){
-        return response.json();
-    })
-    .then(function(risposta){
-        console.log(risposta);
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (risposta) {
 
-        if(risposta.success === true){
-            alert("Comando eseguito correttamente");
+            console.log(risposta);
 
-            caricaCuccia(id);
-        }
-        else {
-            alert(risposta.message);
-        }
-    })
-    .catch(function(errore){
-        console.log("Errore: "+errore);
-        alert("Errore durante l'invio del comando");
-    });
+            if (risposta.success === true) {
 
+                alert("Comando eseguito correttamente");
+
+                caricaCuccia(id, false);
+
+            } else {
+
+                alert(risposta.message || risposta.errore);
+
+            }
+
+        })
+        .catch(function (errore) {
+
+            console.log("Errore: " + errore);
+            alert("Errore durante l'invio del comando");
+
+        });
 
 }
