@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     timerAggiornamento = setInterval(function () {
         caricaCuccia(idCuccia, false);
-    }, 5000);
+    }, 3000);
 
 });
 
